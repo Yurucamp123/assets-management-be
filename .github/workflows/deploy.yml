@@ -1,0 +1,39 @@
+name: IAMS CI/CD Pipeline
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Deploy to EC2 via SSH
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USERNAME }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            # 1. Di chuyển vào thư mục dự án trên EC2
+            cd ~/IAMS-BE
+
+            # 2. Cập nhật code mới nhất từ GitHub
+            git pull origin main
+
+            # 3. Tạo/Cập nhật file .env từ GitHub Secret
+            echo "${{ secrets.ENV_FILE }}" > .env
+
+            # 4. Cấp quyền thực thi cho Maven Wrapper (Sửa lỗi Permission denied)
+            chmod +x mvnw
+
+            # 5. Build và khởi động lại Docker
+            # -d: chạy ngầm, --build: build lại image mới từ code vừa pull
+            docker compose down
+            docker compose up -d --build
+
+            # 6. Dọn dẹp các Image cũ bị thừa (giải phóng ổ cứng EC2)
+            docker image prune -f
