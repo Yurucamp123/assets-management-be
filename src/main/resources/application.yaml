@@ -1,0 +1,53 @@
+spring:
+  application:
+    name: IAMS-BE
+  datasource:
+    url: jdbc:postgresql://localhost:5432/${DB_NAME:iams}
+    username: ${DB_USERNAME:postgres}
+    password: ${DB_PASSWORD:root}
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+  security:
+    oauth2:
+      client:
+        registration:
+          google:
+            client-id: ${GOOGLE_CLIENT_ID}
+            client-secret: ${GOOGLE_CLIENT_SECRET}
+            scope:
+              - email
+              - profile
+            redirect-uri: "{baseUrl}/login/oauth2/code/google"
+          facebook:
+            client-id: ${FACEBOOK_CLIENT_ID}
+            client-secret: ${FACEBOOK_CLIENT_SECRET}
+            scope:
+              - email
+              - public_profile
+            redirect-uri: "{baseUrl}/login/oauth2/code/{registrationId}"
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
+    operations-sorter: alpha
+    persist-authorization: true
+  api-docs:
+    path: /v3/api-docs
+server:
+  port: 8080
+
+app:
+  jwt:
+    secret: ${JWT_SECRET:8zP2fW9uR6vM7zY3xN1qA4sK8jL5bH0gV2dC7xX1nZ9mQ5kS8uJ3iO0pL7eR2wT}
+    expiration-ms: 86400000
+  frontend:
+    url: ${APP_FRONTEND_URL}
+  init:
+    admin:
+      username: ${INIT_ADMIN_USERNAME:admin}
+      password: ${INIT_ADMIN_PASSWORD:admin123}

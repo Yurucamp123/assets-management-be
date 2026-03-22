@@ -1,0 +1,13 @@
+services:
+  iams-backend:
+    build: .
+    container_name: iams-be-container
+    ports:
+      - "8080:8080"
+    env_file:
+      - .env
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://asset-db-instance.c526mc2oot52.ap-southeast-1.rds.amazonaws.com:5432/${DB_NAME}
+      - SERVER_FORWARD_HEADERS_STRATEGY=native
+      - SPRINGDOC_API_DOCS_SERVER_URL=https://api.aspas-edu.site
+    restart: always
